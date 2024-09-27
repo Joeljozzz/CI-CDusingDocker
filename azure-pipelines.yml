@@ -1,29 +1,47 @@
-# CI/CD Pipeline for Docker Deployment to Azure
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-This repository showcases a CI/CD pipeline built with Azure DevOps that automates the process of building a Docker image, pushing it to Azure Container Registry (ACR), and deploying it to Azure App Service. 
-
-## Overview
-
-The CI/CD pipeline is designed to facilitate continuous integration and continuous deployment (CI/CD) for applications packaged in Docker containers. It consists of two primary stages: **Build** and **Deploy**.
-
-### Key Components
-
-- **Docker**: A platform used to develop, ship, and run applications inside containers. Containers are lightweight, portable, and ensure consistency across environments.
-  
-- **Azure Container Registry (ACR)**: A managed Docker container registry that allows you to store and manage your private Docker container images.
-
-- **Azure App Service**: A fully managed platform for building, deploying, and scaling web apps. It supports a variety of programming languages and frameworks.
-
-- **Azure Pipelines**: A cloud service that automates the building, testing, and deployment of applications. It integrates with GitHub, enabling you to trigger pipelines based on code changes.
-
-## Pipeline Configuration
-
-The pipeline is defined in the `azure-pipelines.yml` file, which contains several key components:
-
-### Trigger
-
-The pipeline is set to trigger on pushes to the `main` branch:
-
-```yaml
 trigger:
 - main
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '4aa4f077-a2e4-4cc6-9a3d-d020194a33c5'
+  imageRepository: 'imagepushedacr'
+  containerRegistry: 'containeregdemo.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool: my local machine
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure for Students(b1b14045-d8e1-4487-ae1d-198d8f4c6aa6)'
+        appType: 'webAppContainer'
+        WebAppName: 'demodocker'
+        DockerNamespace: 'containeregdemo.azurecr.io'
+        DockerRepository: 'imagepushedacr'
+        DockerImageTag: $(tag)
