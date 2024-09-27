@@ -10,9 +10,9 @@ resources:
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '4aa4f077-a2e4-4cc6-9a3d-d020194a33c5'
-  imageRepository: 'imagepushedacr'
-  containerRegistry: 'containeregdemo.azurecr.io'
+  dockerRegistryServiceConnection: '.......................'
+  imageRepository: '................'
+  containerRegistry: '......................'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
 
@@ -39,7 +39,7 @@ stages:
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
-        azureSubscription: 'Azure for Students(b1b14045-d8e1-4487-ae1d-198d8f4c6aa6)'
+        azureSubscription: '.....................'
         appType: 'webAppContainer'
         WebAppName: 'demodocker'
         DockerNamespace: 'containeregdemo.azurecr.io'
