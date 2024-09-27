@@ -44,5 +44,4 @@ stages:
         WebAppName: 'demodocker'
         DockerNamespace: 'containeregdemo.azurecr.io'
         DockerRepository: 'imagepushedacr'
-        tags: |
-          $(tag)
+        DockerImageTag: $(tag)
