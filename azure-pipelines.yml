@@ -36,3 +36,11 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+    - task: AzureRmWebAppDeployment@4
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure for Students(b1b14045-d8e1-4487-ae1d-198d8f4c6aa6)'
+        appType: 'webAppContainer'
+        WebAppName: 'demodocker'
+        DockerNamespace: 'containeregdemo.azurecr.io'
+        DockerRepository: 'imagepushedacr'
